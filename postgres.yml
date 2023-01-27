@@ -1,0 +1,16 @@
+version: '3'
+services:
+  postgres:
+    # https://hub.docker.com/layers/library/postgres/14.4-alpine/images/sha256-6b498a3400f2b7d0f9d8fdfb7e20529eb35cc8b9336908402ffccf71e30626ab
+    image: postgres:14.4-alpine
+    shm_size: 256m
+    hostname: postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: 'trust'
+
+volumes:
+  postgres:
