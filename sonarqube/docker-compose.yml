@@ -1,0 +1,37 @@
+version: '3'
+services:
+  postgres_db:
+    image: postgres:14-alpine
+    ports:
+      - '5432:5432' # sonarqube can only work with postgres port 5432
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres_user
+      POSTGRES_PASSWORD: postgres_password
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/db.sql
+      - postgresql:/var/lib/postgresql
+      - postgresql_data:/var/lib/postgresql/data
+
+  # https://docs.sonarsource.com/sonarqube/latest/setup-and-upgrade/install-the-server/installing-sonarqube-from-docker/
+  sonarqube:
+    image: sonarqube:community
+    ports:
+      - '9000:9000'
+    depends_on:
+      - postgres_db
+    environment:
+      SONAR_JDBC_URL: jdbc:postgresql://postgres_db:5432/postgres?currentSchema=sonar
+      SONAR_JDBC_USERNAME: postgres_user
+      SONAR_JDBC_PASSWORD: postgres_password
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_logs:/opt/sonarqube/logs
+      - sonarqube_extensions:/opt/sonarqube/extensions
+
+volumes:
+  sonarqube_data:
+  sonarqube_logs:
+  sonarqube_extensions:
+  postgresql:
+  postgresql_data:
